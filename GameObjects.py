@@ -93,13 +93,13 @@ class PlayerObject(GameObject):
         return False
 
     def move(self, symbol):
-        if symbol == key.LEFT:
+        if symbol == key.LEFT and self.sprite.x > 200 + 40:
             self.sprite.x -= 40
-        if symbol == key.RIGHT:
+        if symbol == key.RIGHT and self.sprite.x < 720 - 40:
             self.sprite.x += 40
-        if symbol == key.UP:
+        if symbol == key.UP and self.sprite.y < 720 - 40:
             self.sprite.y += 40
-        if symbol == key.DOWN:
+        if symbol == key.DOWN and self.sprite.y > 200 + 40:
             self.sprite.y -= 40
         
         

@@ -12,16 +12,19 @@ class GameWindow(pyglet.window.Window):
         self.set_location(400, 100)
         self.frame_rate = 1/60.0
 
+        area_image = preload_image('area.png')
+        self.area_spr = Sprite(area_image, x=190, y=190)
+
         player_image = pyglet.image.load('res/sprites/tanks.png')
         player_spr = pyglet.sprite.Sprite(player_image)
-        self.player = PlayerObject(400, 400, player_spr, 0.1)
+        self.player = PlayerObject(200, 200, player_spr, 0.1)
 
         self.bullet_image = pyglet.image.load('res/sprites/bullet.png')
         self.bullet_list = []
 
         brick_image = pyglet.image.load('res/sprites/brick.png')
         brick_spr = pyglet.sprite.Sprite(brick_image)
-        self.brick = BrickObject(500, 500, brick_spr, scale=0.25)
+        self.brick = BrickObject(400, 400, brick_spr, scale=0.2)
 
     def on_key_press(self, symbol, midifiers):
         if symbol == key.SPACE:
@@ -39,6 +42,7 @@ class GameWindow(pyglet.window.Window):
     
     def on_draw(self):
         self.clear()
+        self.area_spr.draw()
         self.player.draw()
         # self.bullet.draw()
         for bullet in self.bullet_list:
