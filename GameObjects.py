@@ -92,20 +92,6 @@ class PlayerObject(GameObject):
         
         return False
 
-    def move(self, symbol):
-        if symbol == key.LEFT and self.sprite.x > 200 + 40:
-            self.sprite.x -= 40
-        if symbol == key.RIGHT and self.sprite.x < 720 - 40:
-            self.sprite.x += 40
-        if symbol == key.UP and self.sprite.y < 720 - 40:
-            self.sprite.y += 40
-        if symbol == key.DOWN and self.sprite.y > 200 + 40:
-            self.sprite.y -= 40
-        
-        
-        self.posx = self.sprite.x
-        self.posy = self.sprite.y
-
     def draw(self):
         super().draw()
 
@@ -157,7 +143,14 @@ class BulletObject(GameObject):
 
         self.posx = self.sprite.x
         self.posy = self.sprite.y
-            
+
+    def check_collision(self, brick):
+        if brick.posx < self.posx and brick.posx + brick.sprite.width > self.posx + self.sprite.width and \
+                brick.posy < self.posy and brick.posy + brick.sprite.height > self.posy + self.sprite.height:
+            return True
+        return False
+                              
+
     def move(self, dt):
         if self.up_rotation:
             self.posy += 400 * dt
