@@ -2,6 +2,7 @@ import pyglet
 
 from pyglet.window import key
 from pyglet.sprite import Sprite
+from pyglet.text import Label
 
 from GameObjects import *
 from Map.level1 import *
@@ -16,9 +17,12 @@ class GameWindow(pyglet.window.Window):
         area_image = preload_image('area.png')
         self.area_spr = Sprite(area_image, x=190, y=190)
 
-        player_image = pyglet.image.load('res/sprites/tanks.png')
-        player_spr = pyglet.sprite.Sprite(player_image)
-        self.player = PlayerObject(200, 200, player_spr, 0.1)
+        player_image = preload_image('tanks.png')
+        self.player = PlayerObject(200, 200, Sprite(player_image), 0.1)
+
+        self.enemy_image = preload_image('enemy.png')
+        self.enemy_list = []
+        self.enemy_list.append(PlayerObject(320, 320, Sprite(self.enemy_image), 0.1))
 
         self.bullet_image = preload_image('bullet.png')
         self.bullet_list = []
@@ -33,27 +37,52 @@ class GameWindow(pyglet.window.Window):
                     posy = 680 - i*40
                     self.brick_list.append(BrickObject(posx, posy, Sprite(brick_image), scale=0.2))
 
-    # def bullet_move_to(posx, posy):
-    #     for brick in self.brick_list:
-    #         if posx == brick.posx and posy == brick.posy:
-    #             return False
-    #     return True
+        self.brick_destroyed_label = Label('Brick destroyed', x=1000, y=850)
+        self.brick_destroyed_label.italic = True
+        self.brick_destroyed_label.bold = True
+
+        self.brick_destroyed_number_label = Label('0', x=1000, y=750)
+        self.brick_destroyed_number_label.italic = True
+        self.brick_destroyed_number_label.bold = True
+
+        self.brick_destroyed_number = 0
+
+        self.enemy_destroyed_label = Label('Enemy destroyed', x = 1000, y=650)
+        self.enemy_destroyed_label.italic = True
+        self.enemy_destroyed_label.bold = True
+
+        self.enemy_destroyed_number_label = Label('0', x=1000, y=550)
+        self.enemy_destroyed_number_label.italic = True
+        self.enemy_destroyed_number_label.bold = True
+
+        self.enemy_destroyed_number = 0
 
     def player_move_to(self, posx, posy):
         for brick in self.brick_list:
-            if posx == brick.posx and posy == brick.posy:
+            if posx == brick.posx_center and posy == brick.posy_center:
+                return False
+        for enemy in self.enemy_list:
+            if posx == enemy.posx_center and posy == enemy.posy_center:
                 return False
         return True
 
     def player_move(self, symbol):
-        if symbol == key.LEFT and self.player.sprite.x > 200 + 40 and self.player_move_to(self.player.posx-80, self.player.posy):
+        if symbol == key.LEFT and self.player.sprite.x > 200 + 40 \
+                and self.player_move_to(self.player.posx_center-40.0, self.player.posy_center):
             self.player.sprite.x -= 40
-        if symbol == key.RIGHT and self.player.sprite.x < 720 - 40 and self.player_move_to(self.player.posx+40, self.player.posy-40):
+            self.player.posx_center -= 40
+        if symbol == key.RIGHT and self.player.sprite.x < 720 - 40 \
+                and self.player_move_to(self.player.posx_center+40.0, self.player.posy_center):
             self.player.sprite.x += 40
-        if symbol == key.UP and self.player.sprite.y < 720 - 40 and self.player_move_to(self.player.posx, self.player.posy+40):
+            self.player.posx_center += 40
+        if symbol == key.UP and self.player.sprite.y < 720 - 40 \
+                and self.player_move_to(self.player.posx_center, self.player.posy_center+40.0):
             self.player.sprite.y += 40
-        if symbol == key.DOWN and self.player.sprite.y > 200 + 40 and self.player_move_to(self.player.posx-40, self.player.posy-80):
+            self.player.posy_center += 40
+        if symbol == key.DOWN and self.player.sprite.y > 200 + 40 \
+                and self.player_move_to(self.player.posx_center, self.player.posy_center-40.0):
             self.player.sprite.y -= 40
+            self.player.posy_center -= 40
         
         self.player.posx = self.player.sprite.x
         self.player.posy = self.player.sprite.y
@@ -76,10 +105,18 @@ class GameWindow(pyglet.window.Window):
         self.clear()
         self.area_spr.draw()
         self.player.draw()
+        for enemy in self.enemy_list:
+            enemy.draw()
         for bullet in self.bullet_list:
             bullet.draw()
         for brick in self.brick_list:
             brick.draw()
+
+        self.brick_destroyed_label.draw()
+        self.brick_destroyed_number_label.draw()
+
+        self.enemy_destroyed_label.draw()
+        self.enemy_destroyed_number_label.draw()
 
 
     def update_player(self, dt):
@@ -93,6 +130,14 @@ class GameWindow(pyglet.window.Window):
                 if bullet.check_collision(brick):
                     self.bullet_list.remove(bullet)
                     self.brick_list.remove(brick)
+                    self.brick_destroyed_number += 1
+                    self.brick_destroyed_number_label.text = str(self.brick_destroyed_number)
+            for enemy in self.enemy_list:
+                if bullet.check_collision(enemy):
+                    self.enemy_list.remove(enemy)
+                    self.bullet_list.remove(bullet)
+                    self.enemy_destroyed_number += 1
+                    self.enemy_destroyed_number_label.text = str(self.enemy_destroyed_number)
 
     def update(self, dt):
         self.update_player_bullet(dt)

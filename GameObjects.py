@@ -11,6 +11,8 @@ class GameObject:
     def __init__(self, posx, posy, sprite=None):
         self.posx = posx
         self.posy = posy
+        self.posx_center = posx + 20
+        self.posy_center = posy + 20
         self.velx = 0
         self.vely = 0
         if sprite is not None:
@@ -55,6 +57,9 @@ class PlayerObject(GameObject):
             self.posx = self.sprite.x
             self.posy = self.sprite.y
 
+            # self.posx_center += sprite.width*int(self.left_rotation) + sprite.width*int(self.down_rotation)
+            # self.posy_center += -sprite.height*int(self.left_rotation) - sprite.height*int(self.up_rotation)
+
             return True
         if symbol == key.LEFT and not self.left_rotation:
             self.sprite.rotation = -90
@@ -65,6 +70,9 @@ class PlayerObject(GameObject):
 
             self.posx = self.sprite.x
             self.posy = self.sprite.y
+
+            # self.posx_center += -sprite.width*int(self.right_rotation) - sprite.width*int(self.up_rotation)
+            # self.posy_center += sprite.height*int(self.right_rotation) + sprite.height*int(self.down_rotation)
 
             return True
         if symbol == key.UP and not self.up_rotation:
@@ -77,6 +85,9 @@ class PlayerObject(GameObject):
             self.posx = self.sprite.x
             self.posy = self.sprite.y
 
+            # self.posx_center += sprite.width*int(self.left_rotation) + sprite.width*int(self.down_rotation)
+            # self.posy_center += sprite.height*int(self.right_rotation) + sprite.height*int(self.down_rotation)
+
             return True
         if symbol == key.DOWN and not self.down_rotation:
             self.sprite.rotation = 180
@@ -87,6 +98,9 @@ class PlayerObject(GameObject):
             
             self.posx = self.sprite.x
             self.posy = self.sprite.y
+
+            # self.posx_center += -sprite.width*int(self.right_rotation) - sprite.width*int(self.up_rotation)
+            # self.posy_center += -sprite.height*int(self.left_rotation) + sprite.height*int(self.up_rotation)
 
             return True
         
@@ -144,9 +158,9 @@ class BulletObject(GameObject):
         self.posx = self.sprite.x
         self.posy = self.sprite.y
 
-    def check_collision(self, brick):
-        if brick.posx < self.posx and brick.posx + brick.sprite.width > self.posx + self.sprite.width and \
-                brick.posy < self.posy and brick.posy + brick.sprite.height > self.posy + self.sprite.height:
+    def check_collision(self, colission):
+        if colission.posx < self.posx and colission.posx + colission.sprite.width > self.posx + self.sprite.width and \
+                colission.posy < self.posy and colission.posy + colission.sprite.height > self.posy + self.sprite.height:
             return True
         return False
                               
