@@ -147,4 +147,4 @@ class GameWindow(pyglet.window.Window):
 if __name__ == '__main__':
     window = GameWindow(1200, 900, 'Tanks', resizable=False)
     pyglet.clock.schedule_interval(window.update, window.frame_rate)
-    pyglet.app.run()     # 170 x 201
+    pyglet.app.run()
